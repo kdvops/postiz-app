@@ -1,0 +1,32 @@
+# 04-redis.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postiz-redis
+  namespace: postiz
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postiz-redis
+  template:
+    metadata:
+      labels:
+        app: postiz-redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7
+          ports:
+            - containerPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postiz-redis
+  namespace: postiz
+spec:
+  ports:
+    - port: 6379
+  selector:
+    app: postiz-redis

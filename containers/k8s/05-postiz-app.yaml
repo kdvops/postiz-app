@@ -1,0 +1,45 @@
+# 05-postiz-app.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postiz-app
+  namespace: postiz
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postiz-app
+  template:
+    metadata:
+      labels:
+        app: postiz-app
+    spec:
+      containers:
+        - name: postiz
+          image: ghcr.io/gitroomhq/postiz-app:latest
+          ports:
+            - containerPort: 5000
+          envFrom:
+            - configMapRef:
+                name: postiz-config
+            - secretRef:
+                name: postiz-secrets
+          volumeMounts:
+            - name: uploads
+              mountPath: /uploads
+      volumes:
+        - name: uploads
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postiz-app
+  namespace: postiz
+spec:
+  type: ClusterIP
+  selector:
+    app: postiz-app
+  ports:
+    - port: 5000
+      targetPort: 5000

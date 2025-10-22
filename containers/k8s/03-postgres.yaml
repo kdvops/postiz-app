@@ -1,0 +1,54 @@
+# 03-postgres.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postiz-postgres
+  namespace: postiz
+spec:
+  serviceName: postiz-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postiz-postgres
+  template:
+    metadata:
+      labels:
+        app: postiz-postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: postiz-db
+            - name: POSTGRES_USER
+              value: postiz-user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postiz-secrets
+                  key: POSTGRES_PASSWORD
+          volumeMounts:
+            - name: postiz-pgdata
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: postiz-pgdata
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postiz-postgres
+  namespace: postiz
+spec:
+  ports:
+    - port: 5432
+  selector:
+    app: postiz-postgres

@@ -1,0 +1,16 @@
+# 01-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postiz-config
+  namespace: postiz
+data:
+  MAIN_URL: "https://social.kdvops.com"
+  FRONTEND_URL: "https://social.kdvops.com"
+  NEXT_PUBLIC_BACKEND_URL: "https://social.kdvops.com/api"
+  BACKEND_INTERNAL_URL: "http://localhost:3000"  # para que frontend hable con backend internamente
+  REDIS_URL: "redis://postiz-redis:6379"
+  DATABASE_URL: "postgresql://postiz-user:postiz-password@postiz-postgres:5432/postiz-db"
+  # En entorno de prueba/dev, si no usas HTTPS:
+  NOT_SECURED: "true"
+
